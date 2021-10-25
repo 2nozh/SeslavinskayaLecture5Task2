@@ -18,7 +18,8 @@ public class Calculator {
         //Task implementation
         Integer output = 0;
         try {
-            for (String file:unzip(zipFilePath)){
+            //method unzip returns file paths from zip
+            for (String file : unzip(zipFilePath)) {
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
                 int symbol;
                 while ((symbol = bufferedReader.read()) != -1) {
@@ -30,7 +31,6 @@ public class Calculator {
             }
 
         } catch (Exception exception) {
-
             System.out.println(exception.getMessage());
         }
         return output;
@@ -45,27 +45,29 @@ public class Calculator {
         //Task implementation
         Integer output = 0;
         try {
-            for (String file:unzip(zipFilePath)){
+            //method unzip returns file paths from zip
+            for (String file : unzip(zipFilePath)) {
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
                 String line = null;
                 while ((line = bufferedReader.readLine()) != null) {
                     String[] words = line.split(" ");
                     for (String word : words) {
-                        if (output<word.length()){
-                            output=word.length();
+                        if (output < word.length()) {
+                            output = word.length();
                         }
                     }
                 }
                 bufferedReader.close();
             }
         } catch (Exception ex) {
-
             System.out.println(ex.getMessage());
         }
         return output;
     }
-    private ArrayList<String> unzip(String zipFilePath){
-        ArrayList<String> resultPath=new ArrayList<>();
+
+    //method for unzipping files,returns array of work-ready paths
+    private ArrayList<String> unzip(String zipFilePath) {
+        ArrayList<String> resultPath = new ArrayList<>();
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
