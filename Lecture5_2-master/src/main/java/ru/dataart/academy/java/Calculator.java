@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -16,31 +17,21 @@ public class Calculator {
     public Integer getNumberOfChar(String zipFilePath, char character) {
         //Task implementation
         Integer output = 0;
-        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
-            ZipEntry entry;
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                FileOutputStream fout = new FileOutputStream(Main.path + entry.getName());
-                for (int c = zipInputStream.read(); c != -1; c = zipInputStream.read()) {
-                    fout.write(c);
-                }
-                fout.flush();
-                zipInputStream.closeEntry();
-                fout.close();
-                zipInputStream.closeEntry();
-
-                BufferedReader br = new BufferedReader(new FileReader(Main.path + entry.getName()));
-                int c;
-                while ((c = br.read()) != -1) {
-                    if (c == character) {
+        try {
+            for (String file:unzip(zipFilePath)){
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                int symbol;
+                while ((symbol = bufferedReader.read()) != -1) {
+                    if (symbol == character) {
                         output++;
                     }
                 }
-                br.close();
-
+                bufferedReader.close();
             }
-        } catch (Exception ex) {
 
-            System.out.println(ex.getMessage());
+        } catch (Exception exception) {
+
+            System.out.println(exception.getMessage());
         }
         return output;
     }
@@ -53,36 +44,46 @@ public class Calculator {
     public Integer getMaxWordLength(String zipFilePath) {
         //Task implementation
         Integer output = 0;
-        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
-            ZipEntry entry;
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                FileOutputStream fout = new FileOutputStream(Main.path + entry.getName());
-                for (int c = zipInputStream.read(); c != -1; c = zipInputStream.read()) {
-                    fout.write(c);
-                }
-                fout.flush();
-                zipInputStream.closeEntry();
-                fout.close();
-                zipInputStream.closeEntry();
-
-                BufferedReader br = new BufferedReader(new FileReader(Main.path + entry.getName()));
+        try {
+            for (String file:unzip(zipFilePath)){
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
                 String line = null;
-                while ((line = br.readLine()) != null) {
-                    String[] values = line.split(" ");
-                    for (String str : values) {
-                        if (output<str.length()){
-                            output=str.length();
+                while ((line = bufferedReader.readLine()) != null) {
+                    String[] words = line.split(" ");
+                    for (String word : words) {
+                        if (output<word.length()){
+                            output=word.length();
                         }
                     }
                 }
-                br.close();
-
+                bufferedReader.close();
             }
         } catch (Exception ex) {
 
             System.out.println(ex.getMessage());
         }
         return output;
+    }
+    private ArrayList<String> unzip(String zipFilePath){
+        ArrayList<String> resultPath=new ArrayList<>();
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
+            ZipEntry entry;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                FileOutputStream fileOutputStream = new FileOutputStream(Main.path + entry.getName());
+                for (int symbol = zipInputStream.read(); symbol != -1; symbol = zipInputStream.read()) {
+                    fileOutputStream.write(symbol);
+                }
+                fileOutputStream.flush();
+                zipInputStream.closeEntry();
+                fileOutputStream.close();
+                zipInputStream.closeEntry();
+                resultPath.add(Main.path + entry.getName());
+            }
+        } catch (Exception exception) {
+
+            System.out.println(exception.getMessage());
+        }
+        return resultPath;
     }
 
 }
